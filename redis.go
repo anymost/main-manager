@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"github.com/go-redis/redis"
-	"github.com/gpmgo/gopm/modules/log"
 	"io/ioutil"
+	"log"
 	"strconv"
 )
 
@@ -12,33 +12,32 @@ var redisConfig *Config
 var redisClient *redis.Client
 
 type Config struct {
-	Host string `json:"host"`
-	Port int `json:"port"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
 	Password string `json:"password"`
 }
 
-func readConfig() *Config  {
-	log.Info("start reading config")
+func readConfig() {
+	log.Println("start reading config")
 	if redisConfig == nil {
 		data, _ := ioutil.ReadFile("./config/config.json")
 		json.Unmarshal(data, &redisConfig)
 	}
-	log.Info("reading config complete")
-	return redisConfig
+	log.Println("reading config complete")
 }
 
-
-func StartRedis() *redis.Client  {
-	log.Info("start connecting redis")
+func startRedis() {
+	if redisConfig == nil {
+		readConfig()
+	}
+	log.Println("start connecting redis")
 	if redisClient == nil {
-		config := readConfig()
-		address := config.Host + ":" + strconv.Itoa(config.Port)
+		address := redisConfig.Host + ":" + strconv.Itoa(redisConfig.Port)
 		redisClient = redis.NewClient(&redis.Options{
 			Addr:     address,
-			Password: config.Password,
+			Password: redisConfig.Password,
 			DB:       0,
 		})
 	}
-	log.Info("connecting redis complete")
-	return redisClient
+	log.Println("connecting redis complete")
 }
