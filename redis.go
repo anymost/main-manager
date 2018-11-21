@@ -26,7 +26,7 @@ func readConfig() {
 	log.Println("reading config complete")
 }
 
-func startRedis() {
+func initRedis() {
 	if redisConfig == nil {
 		readConfig()
 	}

@@ -17,7 +17,7 @@ type PageConfig struct {
 }
 
 func main() {
-	startRedis()
+	initRedis()
 	router := gin.Default()
 	router.POST("/api/files", fetchFiles)
 	router.POST("/api/create", createFile)
@@ -49,6 +49,7 @@ func fetchFiles(context *gin.Context) {
 }
 
 func renderPage(context *gin.Context) {
+	context.Header("Server", "gin")
 	pagePath := context.Param("pagePath")
 	notFoundPath := redisClient.HGet("pageList", "404")
 	templatePath := redisClient.HGet("pageList", pagePath)
